@@ -1,5 +1,6 @@
 import { useState } from "react"
 import type { BirthFormData } from "../types/form"
+import { getCoordinates } from "../services/geocodingService"
 
 const initialFormData: BirthFormData = {
   name: "",
@@ -24,7 +25,7 @@ export default function BirthForm() {
     })
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError("")
 
@@ -33,10 +34,10 @@ export default function BirthForm() {
       return
     }
 
-    /* if (!formData.birthDate) {
+    if (!formData.birthDate) {
       setError("La fecha de nacimiento es obligatoria.")
       return
-    } */
+    }
 
     if (!formData.birthTime) {
       setError("La hora de nacimiento es obligatoria.")
@@ -48,8 +49,18 @@ export default function BirthForm() {
       return
     }
 
-    console.log("Datos del formulario:", formData)
-    alert("Formulario válido. Revisa la consola.")
+    try {
+      const coordinates = await getCoordinates(formData.birthPlace)
+
+      console.log("Datos del formulario:", formData)
+      console.log("Coordenadas obtenidas:", coordinates)
+
+      alert(
+        `Lugar encontrado:\n${coordinates.displayName}\nLat: ${coordinates.lat}\nLon: ${coordinates.lon}`
+      )
+    } catch (error) {
+      setError("No se pudo obtener la ubicación. Revisa el lugar ingresado.")
+    }
   }
 
   return (
