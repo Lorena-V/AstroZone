@@ -1,13 +1,14 @@
 import { useState } from "react"
 import type { BirthFormData } from "../types/form"
 import { getCoordinates } from "../services/geocodingService"
+import { getSunSign } from "../services/astrologyService" // 
 
 const initialFormData: BirthFormData = {
   name: "",
   birthDate: "",
   birthTime: "",
   birthPlace: "",
-  gender: "no_decirlo",
+  gender: "otro",
 }
 
 export default function BirthForm() {
@@ -51,12 +52,14 @@ export default function BirthForm() {
 
     try {
       const coordinates = await getCoordinates(formData.birthPlace)
+      const sunSign = getSunSign(formData.birthDate)
 
       console.log("Datos del formulario:", formData)
       console.log("Coordenadas obtenidas:", coordinates)
+      console.log("Signo solar:", sunSign)
 
       alert(
-        `Lugar encontrado:\n${coordinates.displayName}\nLat: ${coordinates.lat}\nLon: ${coordinates.lon}`
+        `Lugar encontrado:\n${coordinates.displayName}\nLat: ${coordinates.lat}\nLon: ${coordinates.lon}\nSigno solar: \n${sunSign}\n`
       )
     } catch (error) {
       setError("No se pudo obtener la ubicación. Revisa el lugar ingresado.")
@@ -114,6 +117,7 @@ export default function BirthForm() {
           <option value="no_decirlo">Prefiero no decirlo</option>
           <option value="femenino">Femenino</option>
           <option value="masculino">Masculino</option>
+          
         </select>
       </div>
 
