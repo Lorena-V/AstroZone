@@ -1,7 +1,6 @@
 import { useState } from "react"
 import type { BirthFormData } from "../types/form"
 import { getCoordinates } from "../services/geocodingService"
-import { getSunSign } from "../services/astrologyService" // 
 
 const initialFormData: BirthFormData = {
   name: "",
@@ -52,17 +51,51 @@ export default function BirthForm() {
 
     try {
       const coordinates = await getCoordinates(formData.birthPlace)
-      const sunSign = getSunSign(formData.birthDate)
-
+      
       console.log("Datos del formulario:", formData)
       console.log("Coordenadas obtenidas:", coordinates)
-      console.log("Signo solar:", sunSign)
 
+      // Enviar datos al backend
+      const chartData = {
+        name: formData.name,
+        birthDate: formData.birthDate,
+        birthTime: formData.birthTime,
+        birthPlace: formData.birthPlace,
+        gender: formData.gender,
+        lat: coordinates.lat,
+        lon: coordinates.lon,
+      }
+
+      const response = await fetch("http://127.0.0.1:8000/api/chart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          birthDate: formData.birthDate,
+          birthTime: formData.birthTime,
+          birthPlace: formData.birthPlace,
+          gender: formData.gender,
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error en la respuesta del backend: ${response.statusText}`)
+      }
+
+      const backendResponse = await response.json()
+      console.log("Respuesta del backend:", backendResponse)
+
+      // Mostrar alert temporal
       alert(
-        `Lugar encontrado:\n${coordinates.displayName}\nLat: ${coordinates.lat}\nLon: ${coordinates.lon}\nSigno solar: \n${sunSign}\n`
+        `Carta astral calculada exitosamente:\n\n${JSON.stringify(backendResponse, null, 2)}`
       )
     } catch (error) {
-      setError("No se pudo obtener la ubicación. Revisa el lugar ingresado.")
+      console.error(error)
+      setError("No se pudo obtener la ubicación o procesar la carta. Intenta de nuevo.")
     }
   }
 

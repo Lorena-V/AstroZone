@@ -13,3 +13,12 @@ class ChartInput(BaseModel):
     moonSign: str
     ascSign: str
     elements: Elements
+
+class BirthChartRequest(BaseModel):
+    name: str
+    birthDate: str
+    birthTime: str
+    birthPlace: str
+    gender: Optional[str] = None
+    lat: float
+    lon: float

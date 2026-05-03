@@ -10,11 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@photostructure/tz-lookup": "^11.5.0",
+    "@swisseph/browser": "^1.1.1",
+    "@swisseph/core": "^1.1.2",
+    "luxon": "^3.7.2",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "tz-lookup": "^6.1.25"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
