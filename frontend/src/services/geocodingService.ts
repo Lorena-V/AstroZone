@@ -1,3 +1,4 @@
+// Servicio que convierte el lugar ingresado a coordenadas lat y lon utilizando la API de Nominatim (OpenStreetMap)
 export interface GeocodingResult {
   lat: number
   lon: number

@@ -1,8 +1,9 @@
-/* import { SwissEphemeris } from "@swisseph/browser"
-import { Planet } from "@swisseph/core" */
+
+import { Planet } from "@swisseph/core"
 import tzLookup from "@photostructure/tz-lookup"
 import { DateTime } from "luxon"
 import type { ZodiacSign } from "../types/astrology"
+import type { SwissEphemeris } from "@swisseph/browser"
 
 let sweInstance: SwissEphemeris | null = null
 
@@ -58,6 +59,7 @@ export function getSunSign(birthDate: string): ZodiacSign {
     if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricornio"
     if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "Acuario"
 
+    // si no es ninguno anterior, devuelve picis
     return "Piscis"
 }
 

@@ -1,3 +1,7 @@
+# Este archivo contiene la lógica para calcular la carta natal básica utilizando la biblioteca pyswisseph.
+# Se incluyen funciones para convertir la fecha y hora de nacimiento a UTC, 
+# obtener la zona horaria a partir de las coordenadas, 
+# calcular la longitud eclíptica de los planetas
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -35,13 +39,13 @@ SIGN_ELEMENTS = {
     "Piscis": "Agua",
 }
 
-
+# Función para obtener el signo zodiacal a partir de la longitud eclíptica del planeta
 def get_zodiac_sign_from_longitude(longitude: float) -> str:
     normalized_longitude = longitude % 360
     sign_index = int(normalized_longitude // 30)
     return ZODIAC_SIGNS[sign_index]
 
-
+# Función para obtener la zona horaria a partir de las coordenadas
 def get_timezone_from_coordinates(lat: float, lon: float) -> str:
     tf = TimezoneFinder()
     timezone_name = tf.timezone_at(lat=lat, lng=lon)
@@ -51,7 +55,7 @@ def get_timezone_from_coordinates(lat: float, lon: float) -> str:
 
     return timezone_name
 
-
+# Función para convertir la fecha y hora de nacimiento a UTC
 def get_utc_datetime(birth_date: str, birth_time: str, lat: float, lon: float) -> datetime:
     timezone_name = get_timezone_from_coordinates(lat, lon)
 
@@ -60,7 +64,7 @@ def get_utc_datetime(birth_date: str, birth_time: str, lat: float, lon: float) -
 
     return local_datetime.astimezone(ZoneInfo("UTC"))
 
-
+# Función para calcular el signo zodiacal de un planeta dado el día juliano y el planeta
 def calculate_planet_sign(julian_day: float, planet: int) -> str:
     result = swe.calc_ut(julian_day, planet)
 
@@ -69,7 +73,7 @@ def calculate_planet_sign(julian_day: float, planet: int) -> str:
 
     return get_zodiac_sign_from_longitude(longitude)
 
-
+# Función principal para calcular el mapa natal básico
 def calculate_basic_chart(
     birth_date: str,
     birth_time: str,

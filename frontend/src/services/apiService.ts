@@ -1,3 +1,4 @@
+// Servicio (API) que envía los datos de entrada al backend para calcular la carta natal y recibir la interpretación
 import type { ChartInput } from "../types/chart"
 
 export async function sendInterpretation(data: ChartInput) {
