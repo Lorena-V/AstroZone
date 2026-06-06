@@ -1,12 +1,9 @@
 
-import { Planet } from "@swisseph/core"
-import tzLookup from "@photostructure/tz-lookup"
-import { DateTime } from "luxon"
+import { SwissEphemeris, Planet } from "@swisseph/browser"
 import type { ZodiacSign } from "../types/astrology"
-import type { SwissEphemeris } from "@swisseph/browser"
+
 
 let sweInstance: SwissEphemeris | null = null
-
 async function getSwissEphemeris() {
   if (!sweInstance) {
     sweInstance = new SwissEphemeris()
@@ -19,7 +16,7 @@ async function getSwissEphemeris() {
 export function getZodiacSignFromLongitude(longitude: number): ZodiacSign {
 
     if (!Number.isFinite(longitude)) {
-    throw new Error("Longitude must be a valid number")
+    throw new Error("Debe ser un numero válido.")
     }    
     const zodiacSigns: ZodiacSign[] = [
         "Aries",
@@ -63,39 +60,24 @@ export function getSunSign(birthDate: string): ZodiacSign {
     return "Piscis"
 }
 
-// export async function getMoonSign(
-//   birthDate: string,
-//   birthTime: string,
-//   lat: number,
-//   lon: number
-// ): Promise<ZodiacSign> {
-//   const swe = await getSwissEphemeris()
+export async function getMoonSign(
+  birthDate: string,
+  birthTime: string
+): Promise<ZodiacSign> {
+  const swe = await getSwissEphemeris()
 
-//   const timeZone = tzLookup(lat, lon)
+  const date = new Date(`${birthDate}T${birthTime}:00`)
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
 
-//   // Interpretamos la hora ingresada como hora local del lugar de nacimiento.
-//   const localBirthDateTime = DateTime.fromISO(`${birthDate}T${birthTime}`, {
-//     zone: timeZone,
-//   })
+  const hour =
+    date.getHours() +
+    date.getMinutes() / 60 +
+    date.getSeconds() / 3600
 
-//   if (!localBirthDateTime.isValid) {
-//     throw new Error("Ingresar hora y fecha de nacimiento válidas.")
-//   }
+  const jd = swe.julianDay(year, month, day, hour)
+  const moon = swe.calculatePosition(jd, Planet.Moon)
 
-//   // Swiss Ephemeris espera UT/UTC para construir el Julian Day.
-//   const utcBirthDateTime = localBirthDateTime.toUTC()
-//   const year = utcBirthDateTime.year
-//   const month = utcBirthDateTime.month
-//   const day = utcBirthDateTime.day
-
-//   const hour =
-//     utcBirthDateTime.hour +
-//     utcBirthDateTime.minute / 60 +
-//     utcBirthDateTime.second / 3600 +
-//     utcBirthDateTime.millisecond / 3600000
-
-//   const jd = swe.julianDay(year, month, day, hour)
-//   const moon = swe.calculatePosition(jd, Planet.Moon)
-
-//   return getZodiacSignFromLongitude(moon.longitude)
-// }
+  return getZodiacSignFromLongitude(moon.longitude)
+}
