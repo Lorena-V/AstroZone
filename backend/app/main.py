@@ -9,6 +9,7 @@ app = FastAPI(title="AstroZone App API")
 
 allowed_origins = os.getenv(
     "ALLOWED_ORIGINS",
+    # localhot y localtunnel para desarrollo, se pueden agregar más orígenes
     "http://localhost:5173,http://127.0.0.1:5173",
 ).split(",")
 
