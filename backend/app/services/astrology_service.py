@@ -73,6 +73,15 @@ def calculate_planet_sign(julian_day: float, planet: int) -> str:
 
     return get_zodiac_sign_from_longitude(longitude)
 
+# Función para calcular el signo ascendente usando casas Placidus.
+def calcular_signo_ascendente(julian_day: float, lat: float, lon: float) -> str:
+    _, ascmc = swe.houses(julian_day, lat, lon, b"P")
+
+    # En pyswisseph, ascmc[0] corresponde a la longitud zodiacal del ascendente.
+    asc_longitude = ascmc[0]
+
+    return get_zodiac_sign_from_longitude(asc_longitude)
+
 # Función principal para calcular el mapa natal básico
 def calculate_basic_chart(
     birth_date: str,
@@ -97,12 +106,15 @@ def calculate_basic_chart(
 
     sun_sign = calculate_planet_sign(julian_day, swe.SUN)
     moon_sign = calculate_planet_sign(julian_day, swe.MOON)
+    asc_sign = calcular_signo_ascendente(julian_day, lat, lon)
 
     return {
         "sunSign": sun_sign,
         "moonSign": moon_sign,
+        "ascSign": asc_sign,
         "elements": {
             "sun": SIGN_ELEMENTS[sun_sign],
             "moon": SIGN_ELEMENTS[moon_sign],
+            "asc": SIGN_ELEMENTS[asc_sign],
         }
     }
