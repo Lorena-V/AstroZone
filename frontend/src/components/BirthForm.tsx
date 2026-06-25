@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { BirthFormData } from "../types/form"
 import { getCoordinates } from "../services/geocodingService"
+import ResultadoCarta from "./ResultadoCarta"
 
 const initialFormData: BirthFormData = {
   name: "",
@@ -10,9 +11,11 @@ const initialFormData: BirthFormData = {
   gender: "otro",
 }
 
+// Componente: formulario de ingreso de datos de nacimiento
 export default function BirthForm() {
   const [formData, setFormData] = useState<BirthFormData>(initialFormData)
   const [error, setError] = useState("")
+  const [resultadoCarta, setResultadoCarta] = useState<any>(null)
 
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -45,26 +48,12 @@ export default function BirthForm() {
     }
 
     if (!formData.birthPlace.trim()) {
-      setError("El lugar de nacimiento es obligatorio.")
+      setError("La fecha de nacimiento es obligatoria.")
       return
     }
 
     try {
       const coordinates = await getCoordinates(formData.birthPlace)
-      
-      console.log("Datos del formulario:", formData)
-      console.log("Coordenadas obtenidas:", coordinates)
-
-      // Enviar datos al backend
-      const chartData = {
-        name: formData.name,
-        birthDate: formData.birthDate,
-        birthTime: formData.birthTime,
-        birthPlace: formData.birthPlace,
-        gender: formData.gender,
-        lat: coordinates.lat,
-        lon: coordinates.lon,
-      }
 
       const response = await fetch("http://127.0.0.1:8000/api/chart", {
         method: "POST",
@@ -87,12 +76,7 @@ export default function BirthForm() {
       }
 
       const backendResponse = await response.json()
-      console.log("Respuesta del backend:", backendResponse)
-
-      // Mostrar alert temporal
-      alert(
-        `Carta astral calculada exitosamente:\n\n${JSON.stringify(backendResponse, null, 2)}`
-      )
+      setResultadoCarta(backendResponse)
     } catch (error) {
       console.error(error)
       setError("No se pudo obtener la ubicación o procesar la carta. Intenta de nuevo.")
@@ -100,63 +84,74 @@ export default function BirthForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Nombre</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Ej: Loraine"
+    <>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Nombre</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Ej: Loraine"
+          />
+        </div>
+
+        <div>
+          <label>Fecha de nacimiento</label>
+          <input
+            type="date"
+            name="birthDate"
+            value={formData.birthDate}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label>Hora de nacimiento</label>
+          <input
+            type="time"
+            name="birthTime"
+            value={formData.birthTime}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label>Lugar de nacimiento</label>
+          <input
+            type="text"
+            name="birthPlace"
+            value={formData.birthPlace}
+            onChange={handleChange}
+            placeholder="Ej: La Serena, Chile"
+          />
+        </div>
+
+        <div>
+          <label>Género</label>
+          <select name="gender" value={formData.gender} onChange={handleChange}>
+            <option value="otro">Otro</option>
+            <option value="no_decirlo">Prefiero no decirlo</option>
+            <option value="femenino">Femenino</option>
+            <option value="masculino">Masculino</option>
+          </select>
+        </div>
+
+        {error && <p style={{ color: "crimson" }}>{error}</p>}
+
+        <button type="submit">Calcular mi carta</button>
+      </form>
+
+      {resultadoCarta && (
+        <ResultadoCarta
+          name={resultadoCarta.name}
+          solSign={resultadoCarta.chart.solSign}
+          lunaSign={resultadoCarta.chart.lunaSign}
+          ascSign={resultadoCarta.chart.ascSign}
+          elements={resultadoCarta.chart.elements}
         />
-      </div>
-
-      <div>
-        <label>Fecha de nacimiento</label>
-        <input
-          type="date"
-          name="birthDate"
-          value={formData.birthDate}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <label>Hora de nacimiento</label>
-        <input
-          type="time"
-          name="birthTime"
-          value={formData.birthTime}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <label>Lugar de nacimiento</label>
-        <input
-          type="text"
-          name="birthPlace"
-          value={formData.birthPlace}
-          onChange={handleChange}
-          placeholder="Ej: La Serena, Chile"
-        />
-      </div>
-
-      <div>
-        <label>Género</label>
-        <select name="gender" value={formData.gender} onChange={handleChange}>
-          <option value="otro">Otro</option>
-          <option value="no_decirlo">Prefiero no decirlo</option>
-          <option value="femenino">Femenino</option>
-          <option value="masculino">Masculino</option>
-          
-        </select>
-      </div>
-
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      <button type="submit">Calcular mi carta</button>
-    </form>
+      )}
+    </>
   )
 }

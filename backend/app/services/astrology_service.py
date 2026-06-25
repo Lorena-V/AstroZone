@@ -113,8 +113,8 @@ def calculo_carta_basica(
         "lunaSign": luna_sign,
         "ascSign": asc_sign,
         "elements": {
-            "sun": SIGN_ELEMENTS[sol_sign],
-            "moon": SIGN_ELEMENTS[luna_sign],
+            "sol": SIGN_ELEMENTS[sol_sign],
+            "luna": SIGN_ELEMENTS[luna_sign],
             "asc": SIGN_ELEMENTS[asc_sign],
         }
     }
