@@ -26,14 +26,14 @@ def interpretation(data: ChartInput):
 # Ruta para calcular la carta natal básica, recibe un objeto BirthChartRequest con
 # los datos necesarios para el cálculo y devuelve la carta calculada.
 from app.schemas.chart import BirthChartRequest
-from app.services.astrology_service import calculate_basic_chart
+from app.services.astrology_service import calculo_carta_basica
 
 # Ruta para calcular la carta natal básica, recibe un objeto BirthChartRequest con
 # los datos necesarios para el cálculo y devuelve la carta calculada.
 @router.post("/chart")
 def calculate_chart(data: BirthChartRequest):
-    chart = calculate_basic_chart(
-        birth_date=data.birthDate,
+    chart = calculo_carta_basica(
+        fecha_nacimiento=data.birthDate,
         birth_time=data.birthTime,
         lat=data.lat,
         lon=data.lon

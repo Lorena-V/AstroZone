@@ -46,21 +46,21 @@ def get_zodiac_sign_from_longitude(longitude: float) -> str:
     return ZODIAC_SIGNS[sign_index]
 
 # Función para obtener la zona horaria a partir de las coordenadas
-def get_timezone_from_coordinates(lat: float, lon: float) -> str:
+def get_timezone_desde_coordenadas(lat: float, lon: float) -> str:
     tf = TimezoneFinder()
-    timezone_name = tf.timezone_at(lat=lat, lng=lon)
+    timezone_nombre = tf.timezone_at(lat=lat, lng=lon)
 
-    if timezone_name is None:
+    if timezone_nombre is None:
         raise ValueError("No se pudo determinar la zona horaria del lugar de nacimiento.")
 
-    return timezone_name
+    return timezone_nombre
 
 # Función para convertir la fecha y hora de nacimiento a UTC
-def get_utc_datetime(birth_date: str, birth_time: str, lat: float, lon: float) -> datetime:
-    timezone_name = get_timezone_from_coordinates(lat, lon)
+def get_utc_fechahora(fecha_nacimiento: str, birth_time: str, lat: float, lon: float) -> datetime:
+    timezone_nombre = get_timezone_desde_coordenadas(lat, lon)
 
-    local_datetime = datetime.fromisoformat(f"{birth_date}T{birth_time}")
-    local_datetime = local_datetime.replace(tzinfo=ZoneInfo(timezone_name))
+    local_datetime = datetime.fromisoformat(f"{fecha_nacimiento}T{birth_time}")
+    local_datetime = local_datetime.replace(tzinfo=ZoneInfo(timezone_nombre))
 
     return local_datetime.astimezone(ZoneInfo("UTC"))
 
@@ -83,13 +83,13 @@ def calcular_signo_ascendente(julian_day: float, lat: float, lon: float) -> str:
     return get_zodiac_sign_from_longitude(asc_longitude)
 
 # Función principal para calcular el mapa natal básico
-def calculate_basic_chart(
-    birth_date: str,
+def calculo_carta_basica(
+    fecha_nacimiento: str,
     birth_time: str,
     lat: float,
     lon: float
 ) -> dict:
-    utc_datetime = get_utc_datetime(birth_date, birth_time, lat, lon)
+    utc_datetime = get_utc_fechahora(fecha_nacimiento, birth_time, lat, lon)
 
     utc_hour = (
         utc_datetime.hour
@@ -104,17 +104,17 @@ def calculate_basic_chart(
         utc_hour
     )
 
-    sun_sign = calculate_planet_sign(julian_day, swe.SUN)
-    moon_sign = calculate_planet_sign(julian_day, swe.MOON)
+    sol_sign = calculate_planet_sign(julian_day, swe.SUN)
+    luna_sign = calculate_planet_sign(julian_day, swe.MOON)
     asc_sign = calcular_signo_ascendente(julian_day, lat, lon)
 
     return {
-        "sunSign": sun_sign,
-        "moonSign": moon_sign,
+        "solSign": sol_sign,
+        "lunaSign": luna_sign,
         "ascSign": asc_sign,
         "elements": {
-            "sun": SIGN_ELEMENTS[sun_sign],
-            "moon": SIGN_ELEMENTS[moon_sign],
+            "sun": SIGN_ELEMENTS[sol_sign],
+            "moon": SIGN_ELEMENTS[luna_sign],
             "asc": SIGN_ELEMENTS[asc_sign],
         }
     }

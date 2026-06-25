@@ -1,8 +1,8 @@
 export interface ChartInput {
   name: string
   gender?: string
-  sunSign: string
-  moonSign: string
+  solSign: string
+  lunaSign: string
   ascSign: string
   elements: {
     sun: string

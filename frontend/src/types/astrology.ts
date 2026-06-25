@@ -14,5 +14,5 @@ export type ZodiacSign =
   | "Piscis"
 
 export interface BasicChartResult {
-  sunSign: ZodiacSign
+  solSign: ZodiacSign
 }

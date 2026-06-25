@@ -17,8 +17,8 @@ class Elements(BaseModel):
 class ChartInput(BaseModel):
     name: str
     gender: Optional[str] = None
-    sunSign: str
-    moonSign: str
+    solSign: str
+    lunaSign: str
     ascSign: str
     elements: Elements
 

@@ -39,7 +39,7 @@ export function getZodiacSignFromLongitude(longitude: number): ZodiacSign {
     return zodiacSigns[signIndex]
 }
 
-export function getSunSign(birthDate: string): ZodiacSign {
+export function getsolSign(birthDate: string): ZodiacSign {
     const date = new Date(`${birthDate}T12:00:00`)
     const month = date.getMonth() + 1
     const day = date.getDate()
@@ -60,7 +60,7 @@ export function getSunSign(birthDate: string): ZodiacSign {
     return "Piscis"
 }
 
-export async function getMoonSign(
+export async function getlunaSign(
   birthDate: string,
   birthTime: string
 ): Promise<ZodiacSign> {
