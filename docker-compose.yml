@@ -25,5 +25,3 @@ services:
       - VIRTUAL_HOST=api.astrozone.local
       - VIRTUAL_PORT=8000
       - ALLOWED_ORIGINS=http://astrozone.local
-    volumes:
-      - ./backend:/app
