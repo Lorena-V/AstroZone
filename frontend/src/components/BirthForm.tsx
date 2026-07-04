@@ -55,7 +55,7 @@ export default function BirthForm() {
     try {
       const coordinates = await getCoordinates(formData.birthPlace)
 
-      const response = await fetch("http://127.0.0.1:8000/api/chart", {
+      const response = await fetch("http://api.astrozone.local/api/chart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
