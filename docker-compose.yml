@@ -2,12 +2,33 @@ services:
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: astrozone-nginx-proxy
+    restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs:ro
+      - confd:/etc/nginx/conf.d
+      - vhostd:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - acme:/etc/acme.sh
+    labels:
+      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion:stable
+    restart: always
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - confd:/etc/nginx/conf.d
+      - vhostd:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
 
   frontend:
+    image: nginx
     build: ./frontend
     expose:
       - "80"
@@ -18,6 +39,7 @@ services:
       - backend
 
   backend:
+    image: astrozone-backend
     build: ./backend
     expose:
       - "8000"
@@ -25,3 +47,10 @@ services:
       - VIRTUAL_HOST=api.astrozone.local
       - VIRTUAL_PORT=8000
       - ALLOWED_ORIGINS=http://astrozone.local
+
+volumes:
+  certs:
+  confd:
+  vhostd:
+  html:
+  acme:

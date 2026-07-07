@@ -1,8 +1,9 @@
 // Servicio (API) que envía los datos de entrada al backend para calcular la carta natal y recibir la interpretación
 import type { ChartInput } from "../types/chart"
+import { buildApiUrl } from "./apiConfig"
 
 export async function sendInterpretation(data: ChartInput) {
-  const response = await fetch("http://api.astrozone.local/api/interpretation", {
+  const response = await fetch(buildApiUrl("/api/interpretation"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

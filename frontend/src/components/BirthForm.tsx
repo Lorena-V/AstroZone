@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { BirthFormData } from "../types/form"
 import { getCoordinates } from "../services/geocodingService"
+import { buildApiUrl } from "../services/apiConfig"
 import ResultadoCarta from "./ResultadoCarta"
 
 const initialFormData: BirthFormData = {
@@ -55,7 +56,7 @@ export default function BirthForm() {
     try {
       const coordinates = await getCoordinates(formData.birthPlace)
 
-      const response = await fetch("http://api.astrozone.local/api/chart", {
+      const response = await fetch(buildApiUrl("/api/chart"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
