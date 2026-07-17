@@ -1,6 +1,6 @@
 const fallbackApiBaseUrl =
-  typeof window !== "undefined" && window.location.hostname === "astrozone.local"
-    ? "http://api.astrozone.local"
+  typeof window !== "undefined" && window.location.hostname === "astrozone.lorainecode.cl"
+    ? "https://api.astrozone.lorainecode.cl"
     : "http://localhost:8000"
 
 export function getApiBaseUrl() {
