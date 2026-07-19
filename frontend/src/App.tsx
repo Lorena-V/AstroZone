@@ -6,7 +6,7 @@ function App() {
   return (
     <main style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem" }}>
       <h1>Astro Zone</h1>
-      <p>Setup inicial: React + FastAPI</p>
+      <p>Bienvenidos</p>
       <BirthForm /> {/* Renderiza el formulario para ingresar datos de nacimiento */} 
     </main>
   )
