@@ -49,7 +49,7 @@ def get_zodiac_sign_from_longitude(longitude: float) -> str:
 def get_timezone_desde_coordenadas(lat: float, lon: float) -> str:
     tf = TimezoneFinder()
     timezone_nombre = tf.timezone_at(lat=lat, lng=lon)
-
+   
     if timezone_nombre is None:
         raise ValueError("No se pudo determinar la zona horaria del lugar de nacimiento.")
 

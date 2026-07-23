@@ -1,5 +1,10 @@
 interface ResultadoCartaProps {
   name: string
+  birthPlace: string
+  coordinates: {
+    lat: number
+    lon: number
+  }
   solSign: string
   lunaSign: string
   ascSign: string
@@ -12,11 +17,22 @@ interface ResultadoCartaProps {
 
 export default function ResultadoCarta({
   name,
+  birthPlace,
+  coordinates,
   solSign,
   lunaSign,
   ascSign,
   elements,
 }: ResultadoCartaProps) {
+  const formatCoordinate = (
+    value: number,
+    positiveHemisphere: string,
+    negativeHemisphere: string
+  ) => {
+    const hemisphere = value >= 0 ? positiveHemisphere : negativeHemisphere
+    return `${Math.abs(value).toFixed(4)}° ${hemisphere}`
+  }
+
   return (
     <section
       style={{
@@ -31,6 +47,16 @@ export default function ResultadoCarta({
 
       <p>
         <strong>Nombre:</strong> {name}
+      </p>
+
+      <p>
+        <strong>Lugar de nacimiento:</strong> {birthPlace}
+      </p>
+
+      <p>
+        <strong>Coordenadas:</strong>{" "}
+        {formatCoordinate(coordinates.lat, "N", "S")},{" "}
+        {formatCoordinate(coordinates.lon, "E", "O")}
       </p>
 
       <hr />

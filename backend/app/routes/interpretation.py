@@ -43,5 +43,9 @@ def calculate_chart(data: BirthChartRequest):
         "name": data.name,
         "gender": data.gender,
         "birthPlace": data.birthPlace,
+        "coordinates": {
+            "lat": data.lat,
+            "lon": data.lon
+        },
         "chart": chart
     }

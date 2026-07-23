@@ -1,16 +1,25 @@
 // Servicio que convierte el lugar ingresado a coordenadas lat y lon utilizando la API de Nominatim (OpenStreetMap)
-export interface GeocodingResult {
+export interface PlaceResult {
   lat: number
   lon: number
   displayName: string
 }
 
-export async function getCoordinates(place: string): Promise<GeocodingResult> {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-    place
-  )}&limit=1`
+export async function searchPlacesByCityCountry(
+  pais: string,
+  ciudad: string
+): Promise<PlaceResult[]> {
+  const params = new URLSearchParams({
+    city: ciudad,
+    country: pais,
+    format: "json",
+    limit: "5",
+    addressdetails: "1",
+  })
 
-  const response = await fetch(url)
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?${params.toString()}`
+  )
 
   if (!response.ok) {
     throw new Error("Error al consultar el servicio de geocodificación.")
@@ -18,13 +27,13 @@ export async function getCoordinates(place: string): Promise<GeocodingResult> {
 
   const data = await response.json()
 
-  if (!data.length) {
-    throw new Error("No se encontró el lugar ingresado.")
+  if (!Array.isArray(data)) {
+    throw new Error("Respuesta inválida del servicio de geocodificación.")
   }
 
-  return {
-    lat: Number(data[0].lat),
-    lon: Number(data[0].lon),
-    displayName: data[0].display_name,
-  }
+  return data.map((place) => ({
+    lat: Number(place.lat),
+    lon: Number(place.lon),
+    displayName: place.display_name,
+  }))
 }

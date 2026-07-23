@@ -13,6 +13,7 @@ async function getSwissEphemeris() {
   return sweInstance
 }
 
+// funcion para obtener el signo zodiacal a partir de la longitud
 export function getZodiacSignFromLongitude(longitude: number): ZodiacSign {
 
     if (!Number.isFinite(longitude)) {
@@ -37,8 +38,10 @@ export function getZodiacSignFromLongitude(longitude: number): ZodiacSign {
     const signIndex = Math.floor(normalizedLongitude / 30)
 
     return zodiacSigns[signIndex]
+    
 }
 
+// funcion para obtener el signo solar a partir de la fecha de nacimiento
 export function getsolSign(birthDate: string): ZodiacSign {
     const date = new Date(`${birthDate}T12:00:00`)
     const month = date.getMonth() + 1
@@ -60,6 +63,7 @@ export function getsolSign(birthDate: string): ZodiacSign {
     return "Piscis"
 }
 
+// funcion para obtener el signo lunar a partir de la fecha y hora de nacimiento
 export async function getlunaSign(
   birthDate: string,
   birthTime: string

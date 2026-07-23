@@ -1,6 +1,9 @@
 import { useState } from "react"
 import type { BirthFormData } from "../types/form"
-import { getCoordinates } from "../services/geocodingService"
+import {
+  searchPlacesByCityCountry,
+  type PlaceResult,
+} from "../services/geocodingService"
 import { buildApiUrl } from "../services/apiConfig"
 import ResultadoCarta from "./ResultadoCarta"
 
@@ -8,25 +11,98 @@ const initialFormData: BirthFormData = {
   name: "",
   birthDate: "",
   birthTime: "",
-  birthPlace: "",
+  birthPais: "",
+  birthCiudad: "",
   gender: "otro",
+}
+
+interface ResultadoCartaData {
+  name: string
+  birthPlace: string
+  coordinates: {
+    lat: number
+    lon: number
+  }
+  chart: {
+    solSign: string
+    lunaSign: string
+    ascSign: string
+    elements: {
+      sol: string
+      luna: string
+      asc: string
+    }
+  }
 }
 
 // Componente: formulario de ingreso de datos de nacimiento
 export default function BirthForm() {
   const [formData, setFormData] = useState<BirthFormData>(initialFormData)
   const [error, setError] = useState("")
-  const [resultadoCarta, setResultadoCarta] = useState<any>(null)
+  const [resultadoCarta, setResultadoCarta] =
+    useState<ResultadoCartaData | null>(null)
+  const [resultadoLugares, setResultadoLugares] = useState<PlaceResult[]>([])
+  const [lugarSeleccionado, setLugarSeleccionado] = useState<PlaceResult | null>(
+    null
+  )
+  const [isBuscandoLugar, setIsBuscandoLugar] = useState(false)
 
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) {
     const { name, value } = event.target
 
+    if (name === "birthPais" || name === "birthCiudad") {
+      setLugarSeleccionado(null)
+      setResultadoLugares([])
+    }
+
     setFormData({
       ...formData,
       [name]: value,
     })
+  }
+
+  async function handleBuscarLugar() {
+    setError("")
+
+    if (!formData.birthPais.trim()) {
+      setError("El país de nacimiento es obligatorio.")
+      return
+    }
+
+    if (!formData.birthCiudad.trim()) {
+      setError("La ciudad de nacimiento es obligatoria.")
+      return
+    }
+
+    setIsBuscandoLugar(true)
+    setResultadoLugares([])
+
+    try {
+      const lugares = await searchPlacesByCityCountry(
+        formData.birthPais.trim(),
+        formData.birthCiudad.trim()
+      )
+
+      if (!lugares.length) {
+        setError("No se encontraron lugares para esa ciudad y país.")
+        return
+      }
+
+      setResultadoLugares(lugares)
+    } catch (error) {
+      console.error(error)
+      setError("No se pudo buscar el lugar. Intenta de nuevo.")
+    } finally {
+      setIsBuscandoLugar(false)
+    }
+  }
+
+  function handleSeleccionarLugar(lugar: PlaceResult) {
+    setLugarSeleccionado(lugar)
+    setResultadoLugares([])
+    setError("")
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -48,14 +124,22 @@ export default function BirthForm() {
       return
     }
 
-    if (!formData.birthPlace.trim()) {
-      setError("La fecha de nacimiento es obligatoria.")
+    if (!formData.birthPais.trim()) {
+      setError("El país de nacimiento es obligatorio.")
+      return
+    }
+
+    if (!formData.birthCiudad.trim()) {
+      setError("La ciudad de nacimiento es obligatoria.")
+      return
+    }
+
+    if (!lugarSeleccionado) {
+      setError("Debes buscar y seleccionar un lugar de nacimiento.")
       return
     }
 
     try {
-      const coordinates = await getCoordinates(formData.birthPlace)
-
       const response = await fetch(buildApiUrl("/api/chart"), {
         method: "POST",
         headers: {
@@ -65,10 +149,10 @@ export default function BirthForm() {
           name: formData.name,
           birthDate: formData.birthDate,
           birthTime: formData.birthTime,
-          birthPlace: formData.birthPlace,
+          birthPlace: lugarSeleccionado.displayName,
           gender: formData.gender,
-          lat: coordinates.lat,
-          lon: coordinates.lon,
+          lat: lugarSeleccionado.lat,
+          lon: lugarSeleccionado.lon,
         }),
       })
 
@@ -119,15 +203,52 @@ export default function BirthForm() {
         </div>
 
         <div>
-          <label>Lugar de nacimiento</label>
+          <label>País de nacimiento</label>
           <input
             type="text"
-            name="birthPlace"
-            value={formData.birthPlace}
+            name="birthPais"
+            value={formData.birthPais}
             onChange={handleChange}
-            placeholder="Ej: La Serena, Chile"
+            placeholder="Ej: Chile"
           />
         </div>
+        <div>
+          <label>Ciudad de nacimiento</label>
+          <input
+            type="text"
+            name="birthCiudad"
+            value={formData.birthCiudad}
+            onChange={handleChange}
+            placeholder="Ej: La Serena"
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleBuscarLugar}
+          disabled={isBuscandoLugar}
+        >
+          {isBuscandoLugar ? "Buscando..." : "Buscar lugar"}
+        </button>
+
+        {resultadoLugares.length > 0 && (
+          <ul>
+            {resultadoLugares.map((lugar) => (
+              <li key={`${lugar.lat}-${lugar.lon}-${lugar.displayName}`}>
+                <button type="button" onClick={() => handleSeleccionarLugar(lugar)}>
+                  {lugar.displayName}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {lugarSeleccionado && (
+          <p>
+            <strong>Lugar seleccionado:</strong>{" "}
+            {lugarSeleccionado.displayName}
+          </p>
+        )}
 
         <div>
           <label>Género</label>
@@ -141,12 +262,14 @@ export default function BirthForm() {
 
         {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-        <button type="submit">Calcular mi carta</button>
+        <button type="submit">Ver mi carta</button>
       </form>
 
       {resultadoCarta && (
         <ResultadoCarta
           name={resultadoCarta.name}
+          birthPlace={resultadoCarta.birthPlace}
+          coordinates={resultadoCarta.coordinates}
           solSign={resultadoCarta.chart.solSign}
           lunaSign={resultadoCarta.chart.lunaSign}
           ascSign={resultadoCarta.chart.ascSign}
