@@ -23,6 +23,8 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/astrozone-frontend:latest
+          build-args: |
+            VITE_API_URL=https://api.astrozone.lorainecode.cl
 
       - name: Construir y subir Backend
         uses: docker/build-push-action@v5
