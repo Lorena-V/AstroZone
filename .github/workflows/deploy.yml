@@ -1,4 +1,4 @@
-name: Deploy AstroZone para DigitalOcean
+name: Deploy AstroZone to DigitalOcean
 
 on:
   push:
