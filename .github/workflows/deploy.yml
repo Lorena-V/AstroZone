@@ -18,7 +18,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          command_timeout: 30m 
           script: |
             cd ~/workspace/AstroZone
             git pull origin main
