@@ -5,18 +5,8 @@ import {
   type PlaceResult,
 } from "../services/geocodingService"
 import { buildApiUrl } from "../services/apiConfig"
-import ResultadoCarta from "./ResultadoCarta"
 
-const initialFormData: BirthFormData = {
-  name: "",
-  birthDate: "",
-  birthTime: "",
-  birthPais: "",
-  birthCiudad: "",
-  gender: "otro",
-}
-
-interface ResultadoCartaData {
+export interface ResultadoCartaData {
   name: string
   birthPlace: string
   coordinates: {
@@ -35,12 +25,23 @@ interface ResultadoCartaData {
   }
 }
 
+interface BirthFormProps {
+  onResult: (result: ResultadoCartaData | null) => void
+}
+
+const initialFormData: BirthFormData = {
+  name: "",
+  birthDate: "",
+  birthTime: "",
+  birthPais: "",
+  birthCiudad: "",
+  gender: "otro",
+}
+
 // Componente: formulario de ingreso de datos de nacimiento
-export default function BirthForm() {
+export default function BirthForm({ onResult }: BirthFormProps) {
   const [formData, setFormData] = useState<BirthFormData>(initialFormData)
   const [error, setError] = useState("")
-  const [resultadoCarta, setResultadoCarta] =
-    useState<ResultadoCartaData | null>(null)
   const [resultadoLugares, setResultadoLugares] = useState<PlaceResult[]>([])
   const [lugarSeleccionado, setLugarSeleccionado] = useState<PlaceResult | null>(
     null
@@ -161,7 +162,7 @@ export default function BirthForm() {
       }
 
       const backendResponse = await response.json()
-      setResultadoCarta(backendResponse)
+      onResult(backendResponse)
     } catch (error) {
       console.error(error)
       setError("No se pudo obtener la ubicación o procesar la carta. Intenta de nuevo.")
@@ -169,10 +170,10 @@ export default function BirthForm() {
   }
 
   return (
-    <>
+    <div className="birth-form-wrapper">
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Nombre</label>
+          <label>Nombre: </label>
           <input
             type="text"
             name="name"
@@ -183,7 +184,7 @@ export default function BirthForm() {
         </div>
 
         <div>
-          <label>Fecha de nacimiento</label>
+          <label>Fecha de nacimiento: </label>
           <input
             type="date"
             name="birthDate"
@@ -193,7 +194,7 @@ export default function BirthForm() {
         </div>
 
         <div>
-          <label>Hora de nacimiento</label>
+          <label>Hora de nacimiento: </label>
           <input
             type="time"
             name="birthTime"
@@ -203,7 +204,7 @@ export default function BirthForm() {
         </div>
 
         <div>
-          <label>País de nacimiento</label>
+          <label>País de nacimiento: </label>
           <input
             type="text"
             name="birthPais"
@@ -213,7 +214,7 @@ export default function BirthForm() {
           />
         </div>
         <div>
-          <label>Ciudad de nacimiento</label>
+          <label>Ciudad de nacimiento: </label>
           <input
             type="text"
             name="birthCiudad"
@@ -245,13 +246,13 @@ export default function BirthForm() {
 
         {lugarSeleccionado && (
           <p>
-            <strong>Lugar seleccionado:</strong>{" "}
+            <strong>Lugar seleccionado: </strong>{" "}
             {lugarSeleccionado.displayName}
           </p>
         )}
 
         <div>
-          <label>Género</label>
+          <label>Género: </label>
           <select name="gender" value={formData.gender} onChange={handleChange}>
             <option value="otro">Otro</option>
             <option value="no_decirlo">Prefiero no decirlo</option>
@@ -265,17 +266,6 @@ export default function BirthForm() {
         <button type="submit">Ver mi carta</button>
       </form>
 
-      {resultadoCarta && (
-        <ResultadoCarta
-          name={resultadoCarta.name}
-          birthPlace={resultadoCarta.birthPlace}
-          coordinates={resultadoCarta.coordinates}
-          solSign={resultadoCarta.chart.solSign}
-          lunaSign={resultadoCarta.chart.lunaSign}
-          ascSign={resultadoCarta.chart.ascSign}
-          elements={resultadoCarta.chart.elements}
-        />
-      )}
-    </>
+    </div>
   )
 }

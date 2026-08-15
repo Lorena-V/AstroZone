@@ -46,15 +46,15 @@ export default function ResultadoCarta({
       <h2>Resultado astrológico</h2>
 
       <p>
-        <strong>Nombre:</strong> {name}
+        <strong>Nombre: </strong> {name}
       </p>
 
       <p>
-        <strong>Lugar de nacimiento:</strong> {birthPlace}
+        <strong>Lugar de nacimiento: </strong> {birthPlace}
       </p>
 
       <p>
-        <strong>Coordenadas:</strong>{" "}
+        <strong>Coordenadas: </strong>{" "}
         {formatCoordinate(coordinates.lat, "N", "S")},{" "}
         {formatCoordinate(coordinates.lon, "E", "O")}
       </p>
@@ -62,18 +62,18 @@ export default function ResultadoCarta({
       <hr />
 
       <p>
-        <strong>Sol:</strong> {solSign}
+        <strong>Tu sol: </strong> {solSign}
       </p>
 
       <p>
-        <strong>Luna:</strong> {lunaSign}
+        <strong>Tu luna: </strong> {lunaSign}
       </p>
 
       <p>
-        <strong>Ascendente:</strong> {ascSign}
+        <strong>Tu ascendente: </strong> {ascSign}
       </p>
       <p>
-        <strong>Elementos:</strong> {elements.sol}, {elements.luna}, {elements.asc}
+        <strong>Elementos de poder: </strong> {elements.sol}, {elements.luna}, {elements.asc}
       </p>
     </section>
   )
