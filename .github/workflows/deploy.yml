@@ -31,17 +31,17 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/astrozone-backend:latest
 
-deploy:
-  needs: build-and-push
-  runs-on: ubuntu-latest
-  steps:
-    - name: Despliegue por SSH en Loraine-Web
-      uses: appleboy/ssh-action@master
-      with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/workspace/AstroZone
-            docker compose pull
-            docker compose up -d
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Despliegue por SSH en Loraine-Web
+        uses: appleboy/ssh-action@master
+        with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.SSH_KEY }}
+            script: |
+              cd ~/workspace/AstroZone
+              docker compose pull
+              docker compose up -d
